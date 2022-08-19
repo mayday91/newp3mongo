@@ -11,6 +11,10 @@ const commentSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+  },
+  userName: {
+    type: String,
+    required: true
   }
 },
 {timestamps: true}

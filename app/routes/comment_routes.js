@@ -10,22 +10,27 @@ const router = express.Router()
 
 
 // POST /:reviewId
-router.post('/comments/:reviewId', removeBlanks, (req, res, next) => {
-  const reviewId = req.params.reviewId
+router.post('/comments/:reviewId', requireToken, (req, res, next) => {
+    console.log(req.user)
+    const comment = req.body.comment
+    comment.owner = req.user.id
+    comment.userName = req.user.email
+    console.log(req.user.email)
+    console.log(comment)
+    const reviewId = req.params.reviewId
+    
+    Review.findById(reviewId)
+        .then(handle404)
+        .then(review => {
+            console.log('this is the review', review)
+            console.log('this is the comment', comment)
+            review.comments.push(comment)
 
-  Review.findById(reviewId)
-  .then(review => {
-      review.comments.push(req.body)
-      console.log('this is the comment', req.body)
-      return review.save()
-  })
-  .then(review => res.status(201).json({ review: review }))
-  .then(review => {
-      res.redirect(`/reviews/${review._id}`)
-  })
-  .catch(err => {
-      res.json(err)
-  })
+            return review.save()
+            
+        })
+        .then(review => res.status(201).json({ review: review }))
+        .catch(next)
 })
 
 /// DELETE - Comment Delete

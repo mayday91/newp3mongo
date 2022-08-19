@@ -31,6 +31,11 @@ const clientDevPort = 3000
 mongoose.connect(db, {
 	useNewUrlParser: true,
 })
+	.then(() => {
+		app.listen(port, () => {
+			console.log('connected to db & listening on port ' + port)
+		})
+	})
 
 // instantiate express application object
 const app = express()
@@ -76,9 +81,9 @@ app.use(userRoutes)
 app.use(errorHandler)
 
 // run API on designated port (4741 in this case)
-app.listen(port, () => {
-	console.log('listening on port ' + port)
-})
+// app.listen(port, () => {
+// 	console.log('listening on port ' + port)
+// })
 
 // needed for testing
 module.exports = app

@@ -8,6 +8,10 @@ const reviewSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		artist: {
+			type: String,
+			required: true,
+		},
 		body: {
 			type: String,
 			required: true,
@@ -18,9 +22,6 @@ const reviewSchema = new Schema(
 			ref: 'User',
 			required: true,
 		},
-	},
-	{
-		timestamps: true,
 	}
 )
 

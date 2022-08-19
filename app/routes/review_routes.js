@@ -3,8 +3,15 @@ const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
+// dotenv
+// require("dotenv").config()
+
 // pull in Mongoose model for reviews
 const Review = require('../models/review')
+
+
+// require axios
+const axios = require("axios")
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -28,13 +35,9 @@ const requireToken = passport.authenticate('bearer', { session: false })
 const router = express.Router()
 
 
-
-
-
 // INDEX - GET /reviews
 router.get('/reviews', (req, res, next) => {
 	Review.find()
-		.populate('owner')
 		.then((reviews) => {
 			return reviews.map((review) => review.toObject())
 		})
@@ -45,8 +48,19 @@ router.get('/reviews', (req, res, next) => {
 // SHOW - GET /reviews/:id
 router.get('/reviews/:id', (req, res, next) => {
 	Review.findById(req.params.id)
-		.populate('owner')
 		.then(handle404)
+		.then((review) => {
+			// Error: Mongoose does not support calling populate() on nested docs. Instead of `doc.arr[0].populate("path")`, use `doc.populate("arr.0.path")`
+			const myReview = review
+			console.log('myReview before populate', myReview)
+			// myReview.comments.forEach((comment, commentIndex) => 
+			// myReview.populate())
+			Review.populate(myReview.comments, {'path': 'owner'})
+			console.log('myReview after populate', myReview)
+			console.log('andrew tryin to see if we populated, will return boolean', myReview.populated('comments[0].owner'))
+			console.log(myReview.comments[0])
+			return myReview
+		})
 		.then((review) => res.status(200).json({ review: review.toObject() }))
 		.catch(next)
 })
@@ -65,7 +79,7 @@ router.post('/reviews', requireToken, (req, res, next) => {
 // UPDATE
 // PATCH /reviews/:id
 router.patch('/reviews/:id', requireToken, removeBlanks, (req, res, next) => {
-	delete req.body.example.owner
+	delete req.body.review.owner
 
 	Review.findById(req.params.id)
 		.then(handle404)
@@ -83,7 +97,7 @@ router.delete('/reviews/:id', requireToken, (req, res, next) => {
 		.then(handle404)
 		.then((review) => {
 			requireOwnership(req, review)
-			Review.deleteOne()
+			review.deleteOne()
 		})
 		.then(() => res.sendStatus(204))
 		.catch(next)
