@@ -68,7 +68,8 @@ router.get('/reviews/:id', (req, res, next) => {
 // CREATE - POST /reviews
 router.post('/reviews', requireToken, (req, res, next) => {
 	req.body.review.owner = req.user.id
-
+	const review = req.body.review
+	review.userName = req.user.email
 	Review.create(req.body.review)
 		.then((review) => {
 			res.status(201).json({ review: review.toObject() })
