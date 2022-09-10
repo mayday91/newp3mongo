@@ -22,7 +22,7 @@ const auth = require('./lib/auth')
 
 // define server and client ports
 // used for cors and local port declaration
-const serverDevPort = 8000
+const serverDevPort = 3001
 const clientDevPort = 3000
 
 // establish database connection
@@ -31,11 +31,11 @@ const clientDevPort = 3000
 mongoose.connect(db, {
 	useNewUrlParser: true,
 })
-	.then(() => {
-		app.listen(port, () => {
-			console.log('connected to db & listening on port ' + port)
-		})
-	})
+	// .then(() => {
+	// 	app.listen(port, () => {
+	// 		console.log('connected to db & listening on port ' + port)
+	// 	})
+	// })
 
 // instantiate express application object
 const app = express()
@@ -44,7 +44,7 @@ const app = express()
 // `CLIENT_ORIGIN` is an environment variable that will be set on Heroku
 app.use(
 	cors({
-		origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}`,
+		origin: process.env.CLIENT_ORIGIN || `http://127.0.01:${clientDevPort}`,
 	})
 )
 
@@ -81,9 +81,9 @@ app.use(userRoutes)
 app.use(errorHandler)
 
 // run API on designated port (4741 in this case)
-// app.listen(port, () => {
-// 	console.log('listening on port ' + port)
-// })
+app.listen(port, () => {
+	console.log('listening on port ' + port)
+})
 
 // needed for testing
 module.exports = app
