@@ -44,7 +44,7 @@ const app = express()
 // `CLIENT_ORIGIN` is an environment variable that will be set on Heroku
 app.use(
 	cors({
-		origin: process.env.CLIENT_ORIGIN || `http://127.0.01:${clientDevPort}`,
+		origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}`,
 	})
 )
 
@@ -82,7 +82,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(requestLogger)
 
 // register route files
-app.use('/', reviewRoutes)
+app.use(reviewRoutes)
 app.use(commentRoutes)
 app.use(userRoutes)
 
