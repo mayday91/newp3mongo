@@ -22,7 +22,7 @@ const auth = require('./lib/auth')
 
 // define server and client ports
 // used for cors and local port declaration
-const serverDevPort = 3001
+const serverDevPort = 8080
 const clientDevPort = 3000
 
 // establish database connection
@@ -50,7 +50,18 @@ app.use(
 
 // define port for API to run on
 // adding PORT= to your env file will be necessary for deployment
-const port = process.env.PORT || serverDevPort
+const port = process.env.PORT || serverDevPort || 5000
+
+// for Heroku deployment
+if (process.env.PORT === 'production' || process.env.PORT ===' staging') {
+	app.use(express.static('client/build'));
+	app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname + '/client/build/index.html'));
+	});
+ }
+
+ const path = require("path");
+
 
 // this middleware makes it so the client can use the Rails convention
 // of `Authorization: Token token=<token>` OR the Express convention of
@@ -71,7 +82,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(requestLogger)
 
 // register route files
-app.use(reviewRoutes)
+app.use('/', reviewRoutes)
 app.use(commentRoutes)
 app.use(userRoutes)
 
